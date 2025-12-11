@@ -6,15 +6,22 @@ const NoteDialog = (
 ) => {
    const[title,setTitle]=useState('');
    const[content,setContent]=useState('');
+   const[tag,setTag]=useState('');
   if (!isCreate) return null;
    
   const close=()=>setIsCreate(false);
-  const addNote=()=>{
+  const addNote=(e)=>{
+ 
+    e.preventDefault(); 
+
+    if (!title.trim() || !tag.trim()) return; 
     const saveNotes={
         id:Date.now(),
         title:title,
         content:content,
-        date:new Date().toLocaleDateString('en-GB')
+        date:new Date().toLocaleString('en-GB'),
+        isPin:false,
+        tag:tag
     };
 
     setNotes(p=>[...p,saveNotes])
@@ -22,12 +29,14 @@ const NoteDialog = (
   }
   return (
     // Overlay (Backdrop)
+     <form onSubmit={addNote}>
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
-      
+     
       {/* Modal Panel */}
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 dark:border-slate-700 overflow-hidden transform transition-all">
         
         {/* Header */}
+         
         <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-700/50">
           <h2 className="text-xl font-semibold text-slate-800 dark:text-white">
             Create New Note
@@ -54,6 +63,7 @@ const NoteDialog = (
               className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-900 dark:text-white placeholder-slate-400 transition-all"
               onChange={(e)=>setTitle(e.target.value)}
               value={title}
+              required
            />
           </div>
 
@@ -79,7 +89,7 @@ const NoteDialog = (
             <div className="flex flex-wrap gap-2 p-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-xl focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all">
               
               {/* Fake Existing Tags (Visual Demo) */}
-              <span className="flex items-center gap-1 px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-lg text-sm font-medium">
+              {/* <span className="flex items-center gap-1 px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-lg text-sm font-medium">
                 <Hash size={12} />
                 Design
                 <button className="hover:text-indigo-900 dark:hover:text-indigo-100 ml-1"><X size={12}/></button>
@@ -88,14 +98,16 @@ const NoteDialog = (
                 <Hash size={12} />
                 Urgent
                 <button className="hover:text-purple-900 dark:hover:text-purple-100 ml-1"><X size={12}/></button>
-              </span>
+              </span> */}
 
               {/* The Input Itself */}
               <input 
                 type="text" 
                 placeholder="Add keyword..." 
                 className="flex-1 min-w-[100px] bg-transparent border-none focus:ring-0 p-1 text-slate-900 dark:text-white placeholder-slate-400 text-sm"
-              />
+                value={tag}
+                onChange={(e)=>setTag(e.target.value)}
+                required/>
             </div>
             <p className="text-xs text-slate-400 dark:text-slate-500">Press Enter to create a tag</p>
           </div>
@@ -120,7 +132,9 @@ const NoteDialog = (
         </div>
 
       </div>
+    
     </div>
+      </form>
   );
 };
 

@@ -1,16 +1,19 @@
 
 import { 
 
-  MoreVertical, 
+  MoreVertical,
+  Pin ,
   Calendar, 
   Trash,
   PenSquare
  
 } from 'lucide-react';
+import NoteDialog from './Dialog';
 // import { useState} from 'react';
 
-const NoteCard = ({ title, date, tag, content, color ,deleteNote,note}) => {
-//  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const NoteCard = ({ title, date, tag, content ,deleteNote,note,PinNote,isPin}) => {
+ 
+
 
     return(
   <div className="group relative bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300  flex flex-col justify-between h-64">
@@ -21,7 +24,13 @@ const NoteCard = ({ title, date, tag, content, color ,deleteNote,note}) => {
         {title}
       </h3>
      
+          <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 "
+          onClick={()=>PinNote(note.id)}
+       >
+        {isPin?<Pin size={18} className='fill-amber-100' />:<Pin size={18}  />}
         
+          
+      </button>
     </div>
 
     {/* Body Preview */}
@@ -31,19 +40,24 @@ const NoteCard = ({ title, date, tag, content, color ,deleteNote,note}) => {
 
     {/* Footer Metadata */}
     <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-700/50">
-      <div className={`px-3 py-1 rounded-full text-xs font-medium ${color}`}>
-        {tag}
-      </div>
+     
+
+           
+              
+     {tag && ( <span className="flex items-center gap-1 px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-lg text-sm font-medium">
+                     {tag}</span>
+                )}
+            
       <div className="flex items-center text-slate-400 text-xs">
        <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 "
        >
         {/* <MoreVertical size={18}  /> */}
-           <Trash size={18} className="mr-1.5" onClick={()=>deleteNote(note.id)} 
+           <Trash size={18} className="mr-3" onClick={()=>deleteNote(note.id)} 
            />
       </button>
        <button className="text-slate-400  dark:hover:text-slate-200 ">
-        {/* <MoreVertical size={18}  /> */}
-           <PenSquare size={18} className="mr-1.5" />
+   
+           <PenSquare size={18} className="mr-3" />
       </button>
          
         <Calendar size={14} className="mr-1.5" />

@@ -17,20 +17,92 @@ import NoteDialog from './Dialog';
 const SmartNotesLayout = () => {
   // Simple state for visual toggle demonstration
   const [isDarkMode, setIsDarkMode] = useState(false);
-   const [isCreate, setIsCreate] = useState(false);
-
-
-  const open=()=> setIsCreate(true);
-  // const close=()=>setIsCreate(false);
-
-
- 
-const [notes,setNotes]=useState(() => {
+  const [isCreate, setIsCreate] = useState(false);
+  const [drop, setdrop] = useState(false);
+  const [notes,setNotes]=useState(() => {
   const saved = JSON.parse(localStorage.getItem("notes"));
   return saved || [];
 });
+  // const[search,setSearch]=useState('');
+ 
 
-useEffect(()=>{
+  // const searchTitle=()=>{
+  //     if(!search){
+  //       return
+  //     }
+
+
+  // }
+
+  const open=()=> setIsCreate(true);
+ 
+  
+  const PinNote=(id)=>{
+    setNotes(prev=>{
+
+    const PinUpdate=prev.map(note=>{
+      if(note.id===id){
+        return{...note,isPin:!note.isPin}
+      }
+      else{
+        return note
+      }
+
+    
+    });
+   
+   
+    return PinUpdate;
+
+    
+    });
+    setNotes(prev=>{
+      const sortPin=[...prev].sort((a,b)=>b.isPin-a.isPin);
+      
+      localStorage.setItem("notes",JSON.stringify(sortPin));
+      return sortPin;
+    })
+
+  }
+  const oldSort = () => {
+  setNotes(prev => {
+    const newUpdate = [...prev].sort((a, b) => {
+      // 1️⃣ Pinned notes always come first
+      if (a.isPin !== b.isPin) {
+        return a.isPin ? -1 : 1;
+      }
+
+      // 2️⃣ Sort by OLDEST (ascending)
+      return new Date(b.date) - new Date(a.date);
+    });
+
+    localStorage.setItem("notes", JSON.stringify(newUpdate));
+    return newUpdate;
+  });
+
+  setdrop(prev => !prev);
+};
+
+const newSort = () => {
+  setNotes(prev => {
+    const newUpdate = [...prev].sort((a, b) => {
+      if (a.isPin !== b.isPin) {
+        return a.isPin ? -1 : 1;
+      }
+      return new Date(a.date) - new Date(b.date); // newest first
+    });
+
+    localStorage.setItem("notes", JSON.stringify(newUpdate));
+    return newUpdate;
+  });
+
+  setdrop(prev => !prev);
+};
+
+
+
+useEffect(()=>{  
+ 
   localStorage.setItem("notes",JSON.stringify(notes));
 
 
@@ -81,16 +153,44 @@ useEffect(()=>{
             <div className="relative max-w-2xl mx-auto pb-2">
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                  <Search className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" 
+                  />
                 </div>
                 <input
                   type="text"
                   className="block w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl leading-5 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all"
                   placeholder="Search your notes..."
+                  value={search}
                 />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                {/* <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                   <span className="text-slate-400 text-xs border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5">⌘K</span>
-                </div>
+                </div> */}
+
+                 <div
+    className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    onClick={() => setdrop((prev) => !prev)}
+  >
+    <span className="text-slate-400 text-xs border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5">
+      ⌘S
+    </span>
+  </div>
+
+  {/* Dropdown */}
+  {drop && (
+    <div className="absolute right-0 mt-2 w-40 font-semibold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-2 z-50"
+
+    >
+      <button className="w-full text-left px-1 py-0.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
+      onClick={newSort}>
+         Newest
+      </button>
+      <button className="w-full text-left px-1 py-0.5  hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
+      onClick={oldSort}
+      >
+        Oldest 
+      </button>
+    </div>
+  )}
               </div>
             </div>
 
@@ -125,7 +225,7 @@ useEffect(()=>{
             {notes.map((note) => (
               <NoteCard key={note.id} title={note.title} content={note.content} date={note.date}
               note={note}
-              deleteNote={deleteNote} />
+              deleteNote={deleteNote} PinNote={PinNote} isPin={note.isPin} tag={note.tag} />
             ))}
           </div>
         {isCreate?<NoteDialog isCreate={isCreate} setIsCreate={setIsCreate}
