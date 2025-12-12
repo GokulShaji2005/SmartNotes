@@ -11,7 +11,7 @@ import {
 import NoteDialog from './Dialog';
 // import { useState} from 'react';
 
-const NoteCard = ({ title, date, tag, content ,deleteNote,note,PinNote,isPin}) => {
+const NoteCard = ({ title, date, tag, content ,setOpenDelete,note,PinNote,isPin,setdeleteId,onEdit}) => {
  
 
 
@@ -52,12 +52,22 @@ const NoteCard = ({ title, date, tag, content ,deleteNote,note,PinNote,isPin}) =
        <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 "
        >
         {/* <MoreVertical size={18}  /> */}
-           <Trash size={18} className="mr-3" onClick={()=>deleteNote(note.id)} 
+           <Trash size={18} className="mr-3" 
+           onClick={
+            // ()=>deleteNote(note.id)
+             ()=>{
+              setdeleteId(note.id)
+              setOpenDelete(true);
+             }}
+
+           
            />
       </button>
        <button className="text-slate-400  dark:hover:text-slate-200 ">
    
-           <PenSquare size={18} className="mr-3" />
+           <PenSquare size={18} className="mr-3" 
+           onClick={onEdit}
+           />
       </button>
          
         <Calendar size={14} className="mr-1.5" />

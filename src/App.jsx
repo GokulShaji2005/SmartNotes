@@ -9,6 +9,8 @@ import {
   XIcon
 } from 'lucide-react';
 import NoteCard from './NoteCard';
+import DeleteDialog from './DeleteDialog';
+import EditDialog from './EditDialog';
 // --- Sub-Component: Note Card ---
 // Represents a single note in the grid
 
@@ -19,20 +21,26 @@ const SmartNotesLayout = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
   const [drop, setdrop] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [editOpen,setEditOpen]=useState(false);
+  const [editNote,setEditNote]=useState(null);
+
   const [notes,setNotes]=useState(() => {
   const saved = JSON.parse(localStorage.getItem("notes"));
   return saved || [];
 });
-  // const[search,setSearch]=useState('');
+  const[search,setSearch]=useState('');
+  const [deleteId, setDeleteId] = useState(null);
  
 
-  // const searchTitle=()=>{
-  //     if(!search){
-  //       return
-  //     }
+ 
+    const filterTitle=notes.filter(note=>
+      note.title.toLowerCase().includes(search.toLowerCase())
+    )
 
 
-  // }
+
+  
 
   const open=()=> setIsCreate(true);
  
@@ -118,9 +126,14 @@ useEffect(()=>{
     localStorage.setItem("notes",JSON.stringify(deleteUpdate));
     return deleteUpdate;
     });
-
+setOpenDelete(false);
   }
 
+  const updateNote=(update)=>{
+    const latest=notes.map(n=>n.id===update.id?update:n);
+    setNotes(latest);
+      localStorage.setItem("notes", JSON.stringify(latest));
+  }
   return (
     <div className={`${isDarkMode ? 'dark' : ''}`}>
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 ease-in-out font-sans">
@@ -161,6 +174,7 @@ useEffect(()=>{
                   className="block w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl leading-5 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all"
                   placeholder="Search your notes..."
                   value={search}
+                  onChange={(e)=>setSearch(e.target.value)}
                 />
                 {/* <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                   <span className="text-slate-400 text-xs border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5">⌘K</span>
@@ -222,16 +236,37 @@ useEffect(()=>{
             </div>
           
             {/* Render Mock Notes */}
-            {notes.map((note) => (
+            {/* {notes.map((note) => (
               <NoteCard key={note.id} title={note.title} content={note.content} date={note.date}
               note={note}
               deleteNote={deleteNote} PinNote={PinNote} isPin={note.isPin} tag={note.tag} />
+            ))} */}
+
+
+      {/* filtering NoteCard using search */}
+               {filterTitle && filterTitle.map((note) => (
+              <NoteCard key={note.id} title={note.title} content={note.content} date={note.date}
+              note={note}
+              deleteNote={deleteNote} PinNote={PinNote} isPin={note.isPin} tag={note.tag} setOpenDelete={setOpenDelete}
+              setdeleteId={setDeleteId}
+              
+              onEdit={()=>{
+                setEditNote(note);
+                setEditOpen(true);
+              }}
+              
+              />
             ))}
           </div>
         {isCreate?<NoteDialog isCreate={isCreate} setIsCreate={setIsCreate}
         notes={notes} setNotes={setNotes} 
         />:null}
+ {openDelete && (<DeleteDialog openDelete={openDelete} setOpenDelete={setOpenDelete} deleteNote={deleteNote}
+ deleteId={deleteId}
  
+ />)}
+
+ {editOpen && (<EditDialog updateNote={updateNote} editNote={editNote} editOpen={editOpen} seteditOpen={setEditOpen}/>)}
         </main>
       </div>
     </div>
