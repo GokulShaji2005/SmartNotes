@@ -18,12 +18,13 @@ import NoteDialog from './Dialog';
 // --- Main Layout Component ---
 const SmartNotesLayout = () => {
   // Simple state for visual toggle demonstration
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // const [isDarkMode, setIsDarkMode] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
   const [drop, setdrop] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [editOpen,setEditOpen]=useState(false);
   const [editNote,setEditNote]=useState(null);
+
 
   const [notes,setNotes]=useState(() => {
   const saved = JSON.parse(localStorage.getItem("notes"));
@@ -135,7 +136,8 @@ setOpenDelete(false);
       localStorage.setItem("notes", JSON.stringify(latest));
   }
   return (
-    <div className={`${isDarkMode ? 'dark' : ''}`}>
+    
+    // <div className={`${theme ? 'dark' : ''}`}>
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 ease-in-out font-sans">
         
         {/* --- Top Navigation & Controls --- */}
@@ -153,13 +155,8 @@ setOpenDelete(false);
                 </h1>
               </div>
 
-              <button 
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300"
-                aria-label="Toggle Theme"
-              >
-                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
+      
+
             </div>
 
             {/* Bottom Row: Search Bar (As requested, under the title) */}
@@ -269,7 +266,7 @@ setOpenDelete(false);
  {editOpen && (<EditDialog updateNote={updateNote} editNote={editNote} editOpen={editOpen} seteditOpen={setEditOpen}/>)}
         </main>
       </div>
-    </div>
+    
   );
 };
 
